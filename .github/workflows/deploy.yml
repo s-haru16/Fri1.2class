@@ -1,13 +1,22 @@
-name: Deploy static content to Pages
+name: Deploy Vite app to GitHub Pages
 
 on:
+  # mainブランチにコードがプッシュされた時に実行
   push:
-    branches: ['main']
+    branches: ["main"]
+  # GitHub Actionsのタブから手動で実行できるようにする設定
+  workflow_dispatch:
 
+# GitHub Pagesへの書き込み権限を付与
 permissions:
   contents: read
   pages: write
   id-token: write
+
+# 同時実行を制御（古いビルドをキャンセル）
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
 
 jobs:
   deploy:
@@ -16,23 +25,29 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
-      - name: Set up Node
+
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'npm'
+
       - name: Install dependencies
         run: npm install
-      - name: Build
+
+      - name: Build project
         run: npm run build
-      - name: Setup Pages
+
+      - name: Setup GitHub Pages
         uses: actions/configure-pages@v4
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './dist'
+          path: './dist' # Viteのデフォルト出力先
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
