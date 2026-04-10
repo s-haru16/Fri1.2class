@@ -7,5 +7,5 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
-  base: '/あなたのリポジトリ名/', 
+  base: '/Fri1.2class/', 
 })
